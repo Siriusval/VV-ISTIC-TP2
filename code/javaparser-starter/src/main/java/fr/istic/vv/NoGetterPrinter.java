@@ -5,8 +5,11 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.nodeTypes.modifiers.NodeWithPrivateModifier;
 import com.github.javaparser.ast.visitor.VoidVisitorWithDefaults;
+import com.github.javaparser.resolution.MethodUsage;
+import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 
 // This class visits a compilation unit and
@@ -27,52 +30,18 @@ public class NoGetterPrinter extends VoidVisitorWithDefaults<Void> {
 
     public void visitClassDeclaration(ClassOrInterfaceDeclaration declaration, Void arg) {
         System.out.println(declaration.getFullyQualifiedName().orElse("[Anonymous]"));
-        for(FieldDeclaration field : declaration.getFields()) {
-            field.accept(this, arg);
-        }
-
-    }
-
-    @Override
-    public void visit(FieldDeclaration declaration, Void arg) {
-        visitFieldDeclaration(declaration, arg);
-    }
-
-    public void visitFieldDeclaration(FieldDeclaration declaration, Void arg) {
-        if(declaration.isPrivate() && !declaration.hasModifier(Modifier.Keyword.PUBLIC) && !declaration.isFinal()){
-            System.out.println(" Line: " + declaration.getRange().map(r -> r.begin.line).orElse(-1) + "\n"+declaration);
-        }
-    }
-
-
-
-    /*@Override
-    public void visit(CompilationUnit unit, Void arg) {
-        super.visit()
-        unit.findAll(FieldDeclaration.class).stream()
-                .filter(f -> f.isPrivate() && !f.hasModifier(Modifier.Keyword.PUBLIC) && !f.isFinal())
-                .forEach(f -> System.out.println(" Line: " + f.getRange().map(r -> r.begin.line).orElse(-1) + "\n"+f));
-    }
-
-    public void visitTypeDeclaration(FieldDeclaration declaration, Void arg) {
-        System.out.println(declaration.getFullyQualifiedName().orElse("[Anonymous]"));
-    }
-
-
-    @Override
-    public void visit(CompilationUnit unit, Void arg) {
-        for(ClassOrInterfaceDeclaration type : unit.getTypes()) {
-            type.accept(this, null);
+        for(MethodDeclaration method : declaration.getMethods()) {
+            method.accept(this, arg);
         }
     }
 
     @Override
-    public void visit(ClassOrInterfaceDeclaration declaration, Void arg) {
-        visitClassOrInterfaceDeclaration(declaration, arg);
+    public void visit(MethodDeclaration declaration, Void arg) {
+        visitMethodDeclaration(declaration, arg);
     }
 
-    @Override
-    public void visit(FieldDeclaration declaration, Void arg) {
-        visitFieldDeclaration(declaration, arg);
-    }*/
+    public void visitMethodDeclaration(MethodDeclaration declaration, Void arg) {
+        MethodUsage resolve = declaration.resolve();
+        resolve.
+    }
 }
