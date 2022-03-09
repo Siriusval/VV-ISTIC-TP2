@@ -30,18 +30,19 @@ public class NoGetterPrinter extends VoidVisitorWithDefaults<Void> {
 
     public void visitClassDeclaration(ClassOrInterfaceDeclaration declaration, Void arg) {
         System.out.println(declaration.getFullyQualifiedName().orElse("[Anonymous]"));
-        for(MethodDeclaration method : declaration.getMethods()) {
-            method.accept(this, arg);
+        for(FieldDeclaration field : declaration.getFields()) {
+            field.accept(this, arg);
         }
     }
 
     @Override
-    public void visit(MethodDeclaration declaration, Void arg) {
-        visitMethodDeclaration(declaration, arg);
+    public void visit(FieldDeclaration declaration, Void arg) {
+        visitFieldDeclaration(declaration, arg);
     }
 
-    public void visitMethodDeclaration(MethodDeclaration declaration, Void arg) {
-        MethodUsage resolve = declaration.resolve();
-        resolve.
+    public void visitFieldDeclaration(FieldDeclaration declaration, Void arg) {
+        if(declaration.isPrivate() && !declaration.hasModifier(Modifier.Keyword.PUBLIC)){
+            System.out.println("Line : " + declaration.getRange().get().begin.line + " " +declaration);
+        }
     }
 }
